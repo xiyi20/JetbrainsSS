@@ -1,0 +1,2 @@
+# JetbrainsSS
+JetbrainsSS全称Jetbrains Splash Studio，本工具通过修改Jetbrains旗下的IDE启动程序中的启动图来达到自定义启动图的目的
