@@ -16,25 +16,25 @@ class PathTool:
     def __init__(self, parent):
         self.parent = parent
 
-    def getDirectory(self, text: str, label: LineEdit, panel: QWidget):
-        folder = QFileDialog.getExistingDirectory(None, f"选择{text}的目录")
-        if folder and self.checkPath(folder, text, panel):
+    def getDirectory(self, ide: str, label: LineEdit, panel: QWidget):
+        folder = QFileDialog.getExistingDirectory(None, f"选择{ide}的目录")
+        if folder and self.checkPath(folder, ide, panel):
             label.setText(folder)
 
-    def checkPath(self, folder: str, text: str, panel: QWidget):
+    def checkPath(self, folder: str, ide: str, panel: QWidget):
         check_exe = False
-        exe1 = f"{folder}/bin/{text.lower()}64.exe"
-        exe2 = f"{folder}/bin/{text.lower()}32.exe"
+        exe1 = f"{folder}/bin/{ide.lower()}64.exe"
+        exe2 = f"{folder}/bin/{ide.lower()}32.exe"
         for exe in [exe1, exe2]:
             if os.path.exists(exe) and os.path.isfile(exe):
                 check_exe = True
                 break
-        jar = f"{folder}{JarPath[text].value[:JarPath[text].value.index('.') + 4]}"
+        jar = f"{folder}{JarPath[ide].value[:JarPath[ide].value.index('.') + 4]}"
         result = os.path.exists(jar) and os.path.isfile(jar) and check_exe
         if result:
             InfoBar.success(
                 title=folder,
-                content=f"该目录已被绑定为{text}的安装目录",
+                content=f"该目录已被绑定为{ide}的安装目录",
                 orient=Qt.AlignmentFlag.AlignHCenter,
                 isClosable=True,
                 position=InfoBarPosition.TOP,
@@ -42,11 +42,11 @@ class PathTool:
                 parent=self.parent,
             )
             panel.setVisible(True)
-            RwConfig().wConfig("Path", text, folder)
+            RwConfig().wConfig("IDE", ide, "path", folder)
         else:
             InfoBar.warning(
                 title=folder,
-                content=f"该目录不是有效的{text}安装目录",
+                content=f"该目录不是有效的{ide}安装目录",
                 orient=Qt.AlignmentFlag.AlignHCenter,
                 isClosable=True,
                 position=InfoBarPosition.TOP,
@@ -54,5 +54,5 @@ class PathTool:
                 parent=self.parent,
             )
             panel.setVisible(False)
-            RwConfig().wConfig("Path", text, "")
+            RwConfig().wConfig("IDE", ide, "path", "")
         return result

@@ -19,10 +19,10 @@ class RwConfig:
         except json.decoder.JSONDecodeError as e:
             print(e)
 
-    def wConfig(self, name, key, value):
+    def wConfig(self,zone , name, key, value):
         try:
             with open(self.configFile, "wb") as configFile:
-                self.config[name][key] = value
+                self.config[zone][name][key] = value
                 json.dump(self.config, io.TextIOWrapper(configFile), indent=4)
         except FileNotFoundError as e:
             print(e)

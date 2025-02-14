@@ -1,9 +1,11 @@
+from enum import Enum
+
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 from qfluentwidgets import BodyLabel, LineEdit, PrimaryPushButton
 
 
 class OptionWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, IDE:Enum):
         super().__init__()
         self.setVisible(False)
         self.layout = QVBoxLayout(self)

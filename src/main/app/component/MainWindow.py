@@ -9,7 +9,7 @@ class MainWindow(FluentWindow):
     def __init__(self):
         super().__init__()
         self.screen = QGuiApplication.primaryScreen().size()
-        self.homeWidgets = HomeWidget()
+        self.homeWidgets = HomeWidget(self)
         self.homeInterface = Frame('主页', self.homeWidgets, self)
         self.initUI()
 

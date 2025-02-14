@@ -1,7 +1,19 @@
 {
-    "Path": {
-        "IDEA": "F:/IDEA",
-        "PyCharm": "F:/PyCharm",
-        "WebStorm": "F:/WebStorm"
+    "IDE": {
+        "IDEA": {
+            "path": "F:/IDEA",
+            "splash1": "",
+            "splash2": ""
+        },
+        "PyCharm": {
+            "path": "F:/PyCharm",
+            "splash1": "",
+            "splash2": ""
+        },
+        "WebStorm": {
+            "path": "F:/WebStorm",
+            "splash1": "",
+            "splash2": ""
+        }
     }
 }

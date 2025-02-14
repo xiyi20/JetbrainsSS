@@ -9,9 +9,9 @@ from src.main.app.component.WebstormWidget import WebstormWidget
 
 
 class HomeWidget(QWidget):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
-        self.pathTool = PathTool(self)
+        self.pathTool = PathTool(parent)
         self.layout = VBoxLayout(self)
 
         self.tittle = TitleLabel()

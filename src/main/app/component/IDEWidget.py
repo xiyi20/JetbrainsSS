@@ -16,7 +16,7 @@ class IDEWidget(QWidget):
         self.IDE = IDE
         self.pathTool = pathTool
         self.layout = QVBoxLayout(self)
-        self.panel = OptionWidget()
+        self.panel = OptionWidget(IDE)
         self.contentLayout = QHBoxLayout()
         self.label = BodyLabel()
         self.label.setText(f"{IDE.name}路径:")
@@ -27,7 +27,7 @@ class IDEWidget(QWidget):
         self.path.setClearButtonEnabled(True)
         self.path.editingFinished.connect(
             lambda: pathTool.checkPath(self.path.text(), IDE.name, self.panel)
-            if RwConfig().config["Path"][IDE.name] != self.path.text() else None
+            if RwConfig().config["IDE"][IDE.name]["path"] != self.path.text() else None
         )
         self.ideaButton = PrimaryPushButton("选择", self)
         self.ideaButton.clicked.connect(
@@ -42,7 +42,7 @@ class IDEWidget(QWidget):
         self.loadConfig()
 
     def loadConfig(self):
-        path:str = self.config["Path"][self.IDE.name]
+        path:str = self.config["IDE"][self.IDE.name]["path"]
         if path:
             self.path.setText(path)
             self.panel.setVisible(True)
