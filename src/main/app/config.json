@@ -1,17 +1,20 @@
 {
     "IDE": {
-        "IDEA": {
-            "path": "F:/IDEA",
+        "Idea": {
+            "path": "",
+            "version": "",
             "splash1": "",
             "splash2": ""
         },
         "PyCharm": {
-            "path": "F:/PyCharm",
+            "path": "",
+            "version": "",
             "splash1": "",
             "splash2": ""
         },
         "WebStorm": {
-            "path": "F:/WebStorm",
+            "path": "",
+            "version": "",
             "splash1": "",
             "splash2": ""
         }

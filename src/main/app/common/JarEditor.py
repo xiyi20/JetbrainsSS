@@ -3,15 +3,17 @@ import shutil
 from enum import Enum
 from zipfile import ZipFile
 
+from src.main.app.common.RwConfig import RwConfig
+
 
 class JarEditor:
     @staticmethod
-    def edit(logoPath: [], IDE: Enum):
-        jarPath = IDE.value[0]
+    def edit(logoPath: [], baseDir: str, IDE: Enum):
+        jarPath = f"{baseDir}{IDE.value[0]}"
         targetPath = IDE.value[1]
         tempJar = jarPath + ".tmp"
         try:
-            JarEditor.restore(IDE)
+            JarEditor.restore(baseDir, IDE)
             shutil.copy(jarPath, jarPath + ".bak")
             print("备份文件创建成功")
             targets = [
@@ -25,32 +27,41 @@ class JarEditor:
                         if fileName in targets:
                             with open(logoPath[targets.index(fileName)], "rb") as logo:
                                 data = logo.read()
-                        else: data = old.read(fileName)
+                        else:
+                            data = old.read(fileName)
                         new.writestr(file, data, compress_type=file.compress_type)
             shutil.move(tempJar, jarPath)
-            cachePath = f"C:/Users/{os.getlogin()}/AppData/Local/JetBrains/"
             print("splash修补成功")
+            JarEditor.clearCache(IDE)
         except Exception as e:
-            shutil.copy(jarPath + ".bak", jarPath)
-            print(e)
+            print(f"修改出错:\n{e}")
+            JarEditor.restore(baseDir, IDE)
+            print("-" * 10)
         finally:
             if os.path.exists(tempJar) and os.path.isfile(tempJar):
                 os.remove(tempJar)
 
     @staticmethod
-    def restore(IDE: Enum):
-        jarPath = IDE.value[0]
+    def restore(baseDir: str, IDE: Enum):
+        jarPath = baseDir + IDE.value[0]
         bakPath = jarPath + ".bak"
         if os.path.exists(jarPath) and os.path.isfile(bakPath):
             shutil.move(bakPath, jarPath)
+            print("已还原备份文件")
+            JarEditor.clearCache(IDE)
         else:
             print("当前没有备份文件")
 
-
-class A(Enum):
-    a = ["C:/Users/dxcxy/Desktop/app.jar","artwork/webide_logo.png"]
-
-
-JarEditor.edit([r"C:\Users\dxcxy\Desktop\idea_logo.png", r"C:\Users\dxcxy\Desktop\idea_logo@2x.png"], A.a)
-
-# JarEditor.restore(A.a)
+    @staticmethod
+    def clearCache(IDE: Enum):
+        cachePath = f"C:/Users/{os.getlogin()}/AppData/Local/JetBrains/"
+        version = RwConfig().config["IDE"][IDE.name]["version"]
+        for directory in os.listdir(cachePath):
+            if IDE.name in directory and directory.endswith(version):
+                cachePath = f"{cachePath}{directory}/splash"
+                if os.path.exists(cachePath) and os.path.isdir(cachePath):
+                    for filename in os.listdir(cachePath):
+                        if filename.endswith(".ij"):
+                            os.remove(os.path.join(cachePath, filename))
+                break
+        print("缓存清理成功")

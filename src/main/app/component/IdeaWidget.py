@@ -5,4 +5,4 @@ from src.main.app.component.IDEWidget import IDEWidget
 
 class IdeaWidget(IDEWidget):
     def __init__(self, pathTool: PathTool):
-        super().__init__(JarPath.IDEA, pathTool)
+        super().__init__(JarPath.Idea, pathTool)
