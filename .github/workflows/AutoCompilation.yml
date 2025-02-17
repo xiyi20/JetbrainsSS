@@ -29,8 +29,8 @@ jobs:
 
       - name: Init Files(Code)
         run: |
-          mkdir temp1/Code
-          copy src temp1
+          mkdir temp1\Code
+          copy src\ temp1\Code\
 
       - name: Upload Code
         uses: actions/upload-artifact@v4
@@ -45,8 +45,9 @@ jobs:
       - name: Init Files(JetbrainsSS)
         run: |
           mkdir temp2\JetbrainsSS
+          mkdir temp2\JetbrainsSS\resources
           copy dist\JetbrainsSS.exe temp2\JetbrainsSS\
-          copy src\main\resources temp2\JetbrainsSS\
+          copy src\main\resources\* temp2\JetbrainsSS\resources\
           copy src\main\app\config.json temp2\JetbrainsSS\
 
       - name: Upload Artifacts
