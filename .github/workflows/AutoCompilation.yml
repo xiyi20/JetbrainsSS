@@ -12,7 +12,7 @@ on:
       
 jobs:
   pyinstaller-build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Init Files(Code)
         run: |
           mkdir temp1/Code
@@ -47,7 +47,7 @@ jobs:
           mkdir temp2\JetbrainsSS
           copy dist\JetbrainsSS.exe temp2\JetbrainsSS\
           copy src\main\resources temp2\JetbrainsSS\
-          copy config.json temp2\JetbrainsSS\
+          copy src\main\app\config.json temp2\JetbrainsSS\
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
