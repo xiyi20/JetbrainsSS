@@ -3,24 +3,38 @@ import shutil
 from enum import Enum
 from zipfile import ZipFile
 
+from PyQt6.QtCore import Qt, QObject
+from qfluentwidgets import ProgressBar, InfoBar, InfoBarPosition
+
 from src.main.app.common.RwConfig import RwConfig
 
 
-class JarEditor:
-    @staticmethod
-    def edit(logoPath: [], baseDir: str, IDE: Enum):
-        jarPath = f"{baseDir}{IDE.value[0]}"
-        targetPath = IDE.value[1]
-        tempJar = jarPath + ".tmp"
+class JarEditor(QObject):
+
+    def __init__(self, IDE: Enum, baseDir: str, progress: ProgressBar, parent=None):
+        super().__init__(parent)
+        self.IDE = IDE
+        self.jarPath = f"{baseDir}{self.IDE.value[0]}"
+        self.bakPath = self.jarPath + ".bak"
+        self.cachePath = f"C:/Users/{os.getlogin()}/AppData/Local/JetBrains/"
+        self.progress = progress
+        self.parent = parent
+
+    def edit(self, logoPath: []):
+        targetPath = self.IDE.value[1]
+        tempJar = self.jarPath + ".tmp"
         try:
-            JarEditor.restore(baseDir, IDE)
-            shutil.copy(jarPath, jarPath + ".bak")
-            print("备份文件创建成功")
+            self.restore(False, False)
+            self.progress.setValue(0)
+            shutil.copy(self.jarPath, self.jarPath + ".bak")
             targets = [
                 targetPath,
                 targetPath[:targetPath.rfind(".")] + "@2x" + targetPath[targetPath.rfind("."):]
             ]
-            with ZipFile(jarPath, "r") as old:
+            self.progress.resume()
+            with ZipFile(self.jarPath, "r") as old:
+                total = len(old.namelist())
+                current = 0
                 with ZipFile(tempJar, "w") as new:
                     for file in old.infolist():
                         fileName = file.filename
@@ -30,38 +44,75 @@ class JarEditor:
                         else:
                             data = old.read(fileName)
                         new.writestr(file, data, compress_type=file.compress_type)
-            shutil.move(tempJar, jarPath)
-            print("splash修补成功")
-            JarEditor.clearCache(IDE)
+                        current += 1
+                        self.progress.setValue(int(current / total) * 80)
+            shutil.move(tempJar, self.jarPath)
+            self.clearCache()
+            self.progress.setValue(100)
+            InfoBar.success(
+                title="splash修补成功",
+                content="运行IDE以查看效果,如遇报错打不开请点击[还原]",
+                orient=Qt.AlignmentFlag.AlignHCenter,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=5000,
+                parent=self.parent,
+            )
         except Exception as e:
-            print(f"修改出错:\n{e}")
-            JarEditor.restore(baseDir, IDE)
-            print("-" * 10)
+            self.restore(True, False)
+            self.progress.setError(True)
+            InfoBar.error(
+                title="splash修补出错,已强制还原备份",
+                content=e,
+                orient=Qt.AlignmentFlag.AlignHCenter,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=5000,
+                parent=self.parent,
+            )
         finally:
             if os.path.exists(tempJar) and os.path.isfile(tempJar):
                 os.remove(tempJar)
 
-    @staticmethod
-    def restore(baseDir: str, IDE: Enum):
-        jarPath = baseDir + IDE.value[0]
-        bakPath = jarPath + ".bak"
-        if os.path.exists(jarPath) and os.path.isfile(bakPath):
-            shutil.move(bakPath, jarPath)
-            print("已还原备份文件")
-            JarEditor.clearCache(IDE)
+    def restore(self, clear: bool, dialog: bool = True):
+        self.progress.setValue(0)
+        if os.path.exists(self.bakPath) and os.path.isfile(self.bakPath):
+            shutil.move(self.bakPath, self.jarPath)
+            self.progress.setValue(100)
+            if clear: self.clearCache()
+            if dialog:
+                InfoBar.success(
+                    title=f"{self.IDE.name}还原成功",
+                    content=f"已还原对于{self.IDE.name}的splash修改",
+                    orient=Qt.AlignmentFlag.AlignHCenter,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=4500,
+                    parent=self.parent,
+                )
         else:
-            print("当前没有备份文件")
+            self.progress.setError(True)
+            self.progress.setValue(100)
+            if dialog:
+                InfoBar.warning(
+                    title=f"{self.IDE.name}还原失败",
+                    content=f"当前没有对于{self.IDE.name}的任何修改,无需还原",
+                    orient=Qt.AlignmentFlag.AlignHCenter,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=3000,
+                    parent=self.parent,
+                )
 
-    @staticmethod
-    def clearCache(IDE: Enum):
-        cachePath = f"C:/Users/{os.getlogin()}/AppData/Local/JetBrains/"
-        version = RwConfig().config["IDE"][IDE.name]["version"]
-        for directory in os.listdir(cachePath):
-            if IDE.name in directory and directory.endswith(version):
-                cachePath = f"{cachePath}{directory}/splash"
+    def clearCache(self):
+        version = RwConfig().config["IDE"][self.IDE.name]["version"]
+        if not (os.path.exists(self.cachePath) and os.path.isdir(self.cachePath)):
+            return
+        for directory in os.listdir(self.cachePath):
+            if self.IDE.name in directory and directory.endswith(version):
+                cachePath = f"{self.cachePath}{directory}/splash"
                 if os.path.exists(cachePath) and os.path.isdir(cachePath):
                     for filename in os.listdir(cachePath):
                         if filename.endswith(".ij"):
                             os.remove(os.path.join(cachePath, filename))
                 break
-        print("缓存清理成功")

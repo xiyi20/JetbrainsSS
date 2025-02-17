@@ -1,7 +1,7 @@
 from enum import Enum
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
-from qfluentwidgets import BodyLabel, PrimaryPushButton
+from qfluentwidgets import BodyLabel, PrimaryPushButton, ProgressBar
 
 from src.main.app.common.JarEditor import JarEditor
 from src.main.app.common.PathTool import PathTool
@@ -10,19 +10,21 @@ from src.main.app.component.PressButton import PressButton
 
 
 class OptionWidget(QWidget):
-    def __init__(self, IDE: Enum, pathTool: PathTool, config: {}):
+    def __init__(self, IDE: Enum, pathTool: PathTool, config: {}, parent):
         super().__init__()
         self.setVisible(False)
         self.IDE = IDE
         self.config = config
         self.baseDir = self.config["IDE"][IDE.name]["path"]
+        self.progressBar = ProgressBar(self)
+        self.jarEditor = JarEditor(IDE, self.baseDir, self.progressBar, parent)
         self.layout = QVBoxLayout(self)
         self.topLayout = QHBoxLayout()
         self.splashLabel1 = BodyLabel()
         self.splashLabel1.setText("启动图1:")
         self.splashPath1 = FLineEdit()
         self.splashPath1.setPlaceholderText("640*400px")
-        self.splashPath1.unfocused.connect(
+        self.splashPath1.focusOut.connect(
             lambda: pathTool.checkSplashPath(IDE.name, self.splashPath1, "splash1", self.splashPath1.text())
             if self.splashPath1.text() else None
         )
@@ -43,7 +45,7 @@ class OptionWidget(QWidget):
         self.splashLabel2.setText("启动图2:")
         self.splashPath2 = FLineEdit()
         self.splashPath2.setPlaceholderText("1280*800px")
-        self.splashPath2.unfocused.connect(
+        self.splashPath2.focusOut.connect(
             lambda: pathTool.checkSplashPath(IDE.name, self.splashPath2, "splash2", self.splashPath2.text())
             if self.splashPath2.text() else None
         )
@@ -62,16 +64,17 @@ class OptionWidget(QWidget):
         self.bottomLayout = QHBoxLayout()
         self.modButton = PrimaryPushButton("开始修补", self)
         self.modButton.clicked.connect(
-            lambda: JarEditor.edit([self.splashPath1.text(), self.splashPath2.text()], self.baseDir, IDE)
+            lambda: self.jarEditor.edit([self.splashPath1.text(), self.splashPath2.text()])
         )
         self.restoreButton = PrimaryPushButton("还原", self)
         self.restoreButton.clicked.connect(
-            lambda: JarEditor.restore(self.baseDir, IDE)
+            lambda: self.jarEditor.restore(True)
         )
         self.bottomLayout.addWidget(self.modButton)
         self.bottomLayout.addWidget(self.restoreButton)
         self.layout.addLayout(self.bottomLayout)
 
+        self.layout.addWidget(self.progressBar)
         self.loadConfig()
 
     def loadConfig(self):

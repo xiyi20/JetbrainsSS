@@ -1,6 +1,7 @@
 import io
 import json
 
+
 class RwConfig:
     _rwConfig = None
     def __new__(cls, *args, **kwargs):

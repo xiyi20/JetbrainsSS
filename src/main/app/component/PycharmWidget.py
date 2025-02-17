@@ -4,5 +4,5 @@ from src.main.app.component.IDEWidget import IDEWidget
 
 
 class PycharmWidget(IDEWidget):
-    def __init__(self, pathTool: PathTool):
-        super().__init__(JarPath.PyCharm, pathTool)
+    def __init__(self, pathTool: PathTool,parent):
+        super().__init__(JarPath.PyCharm, pathTool,parent)

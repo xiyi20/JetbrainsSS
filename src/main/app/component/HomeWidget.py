@@ -19,6 +19,6 @@ class HomeWidget(QWidget):
         self.tittle.setText("欢迎使用JetbrainsSS")
 
         self.layout.addWidget(self.tittle)
-        self.layout.addWidget(IdeaWidget(self.pathTool))
-        self.layout.addWidget(PycharmWidget(self.pathTool))
-        self.layout.addWidget(WebstormWidget(self.pathTool))
+        self.layout.addWidget(IdeaWidget(self.pathTool, parent))
+        self.layout.addWidget(PycharmWidget(self.pathTool, parent))
+        self.layout.addWidget(WebstormWidget(self.pathTool, parent))
