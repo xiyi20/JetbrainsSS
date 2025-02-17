@@ -33,7 +33,7 @@ class OptionWidget(QWidget):
             lambda: pathTool.getSplashPath(IDE.name, "splash1(640*400px)", self.splashPath1)
         )
         self.splashButton1.pressed.connect(
-            lambda: self.splashPath1.setEnabled(True)
+            lambda: pathTool.unlockLabel(self.splashPath1)
         )
         self.topLayout.addWidget(self.splashLabel1)
         self.topLayout.addWidget(self.splashPath1)
@@ -54,7 +54,7 @@ class OptionWidget(QWidget):
             lambda: pathTool.getSplashPath(IDE.name, "splash2(1280*800px)", self.splashPath2)
         )
         self.splashButton2.pressed.connect(
-            lambda: self.splashPath2.setEnabled(True)
+            lambda: pathTool.unlockLabel(self.splashPath2)
         )
         self.centerLayout.addWidget(self.splashLabel2)
         self.centerLayout.addWidget(self.splashPath2)

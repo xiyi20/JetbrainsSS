@@ -1,0 +1,56 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: AutoCompilation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/main/**'
+      - '.github/workflows/AutoCompilation.yml'
+      
+jobs:
+  pyinstaller-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Init Files(Code)
+        run: |
+          mkdir temp1/Code
+          copy src temp1
+
+      - name: Upload Code
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code
+          path: temp1\Code
+
+      - name: Create Executable
+        run: |
+          pyinstaller --onefile --windowed --name=JetbrainsSS.exe -i '.\src\main\resources\logo.ico' --add-data 'src;src' .\src\main\app\mian.py .\src\main\app\common\JarEditor.py .\src\main\app\common\JarPath.py .\src\main\app\common\PathTool.py .\src\main\app\common\RwConfig.py .\src\main\app\component\FLineEdit.py .\src\main\app\component\Frame.py .\src\main\app\component\HomeWidget.py .\src\main\app\component\IdeaWidget.py .\src\main\app\component\IDEWidget.py .\src\main\app\component\MainWindow.py .\src\main\app\component\OptionWidget.py .\src\main\app\component\PressButton.py .\src\main\app\component\PycharmWidget.py .\src\main\app\component\WebstormWidget.py
+
+      - name: Init Files(JetbrainsSS)
+        run: |
+          mkdir temp2\JetbrainsSS
+          copy dist\JetbrainsSS.exe temp2\JetbrainsSS\
+          copy src\main\resources temp2\JetbrainsSS\
+          copy config.json temp2\JetbrainsSS\
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: JetbrainsSS-Artifacts
+          path: temp2

@@ -121,3 +121,15 @@ class PathTool:
             label.setText("")
             label.setEnabled(True)
             return False
+
+    def unlockLabel(self, label: FLineEdit):
+        label.setEnabled(True)
+        InfoBar.warning(
+            title="手动输入已解锁",
+            content="为避免错填可输入框内长按右键锁定",
+            orient=Qt.AlignmentFlag.AlignHCenter,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=3000,
+            parent=self.parent,
+        )

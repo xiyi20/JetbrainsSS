@@ -36,7 +36,7 @@ class IDEWidget(QWidget):
             lambda: pathTool.getIdeDirectory(IDE.name, self.path, self.panel)
         )
         self.ideButton.pressed.connect(
-            lambda: self.path.setEnabled(True)
+            lambda: pathTool.unlockLabel(self.path)
         )
         self.contentLayout.addWidget(self.label)
         self.contentLayout.addWidget(self.path)

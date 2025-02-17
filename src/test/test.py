@@ -1,17 +1,17 @@
+import os
 import unittest
-
-import win32api
-
-from src.main.app.common.JarPath import JarPath
-from src.main.app.common.RwConfig import RwConfig
 
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        exePath = RwConfig().config["IDE"][JarPath.Idea.name]["exec"]
-        info = win32api.GetFileVersionInfo(exePath, "\\")
-        ms = info["ProductVersionMS"]
-        print(f"{win32api.HIWORD(ms)}")
+        string = r"pyinstaller --onefile --windowed -i '.\src\main\resources\logo.png' .\src\main\app\mian.py"
+        for folder in "common","component":
+            path = fr"E:\CODE\git\JetbrainsSS\src\main\app\{folder}"
+            for filename in os.listdir(path):
+                if filename.endswith(".py"):
+                    string+=fr" .\src\main\app\{folder}\{filename}"
+        print(string)
+
 
 if __name__ == '__main__':
     unittest.main()
