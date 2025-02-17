@@ -1,22 +1,22 @@
 {
     "IDE": {
         "Idea": {
-            "path": "",
-            "version": "",
-            "splash1": "",
-            "splash2": ""
+            "path": "F:/IDEA",
+            "version": "2024.3",
+            "splash1": "C:/Users/dxcxy/Desktop/idea_logo.png",
+            "splash2": "C:/Users/dxcxy/Desktop/idea_logo@2x.png"
         },
         "PyCharm": {
-            "path": "",
-            "version": "",
-            "splash1": "",
-            "splash2": ""
+            "path": "F:/PyCharm",
+            "version": "2024.3",
+            "splash1": "C:/Users/dxcxy/Desktop/pycharm_logo.png",
+            "splash2": "C:/Users/dxcxy/Desktop/pycharm_logo@2x.png"
         },
         "WebStorm": {
-            "path": "",
-            "version": "",
-            "splash1": "",
-            "splash2": ""
+            "path": "F:/WebStorm",
+            "version": "2024.3",
+            "splash1": "C:/Users/dxcxy/Desktop/webide_logo.png",
+            "splash2": "C:/Users/dxcxy/Desktop/webide_logo@2x.png"
         }
     }
 }
