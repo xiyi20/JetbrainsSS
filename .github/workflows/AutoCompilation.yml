@@ -30,6 +30,7 @@ jobs:
       - name: Init Files(Code)
         run: |
           mkdir temp1\Code
+          copy requirements.txt temp1\Code
           xcopy src temp1\Code\src /E /I
 
       - name: Upload Code

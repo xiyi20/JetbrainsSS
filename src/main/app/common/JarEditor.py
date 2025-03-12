@@ -77,7 +77,19 @@ class JarEditor(QObject):
     def restore(self, clear: bool, dialog: bool = True):
         self.progress.setValue(0)
         if os.path.exists(self.bakPath) and os.path.isfile(self.bakPath):
-            shutil.move(self.bakPath, self.jarPath)
+            try:
+                shutil.move(self.bakPath, self.jarPath)
+            except OSError:
+                InfoBar.error(
+                    title=f"{self.IDE.name}还原失败",
+                    content=f"{self.IDE.name}正在运行中,请关闭后重试",
+                    orient=Qt.AlignmentFlag.AlignHCenter,
+                    isClosable=True,
+                    position=InfoBarPosition.TOP,
+                    duration=4500,
+                    parent=self.parent,
+                )
+                return
             self.progress.setValue(100)
             if clear: self.clearCache()
             if dialog:
