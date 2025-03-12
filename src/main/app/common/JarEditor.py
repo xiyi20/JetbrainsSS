@@ -58,6 +58,17 @@ class JarEditor(QObject):
                 duration=5000,
                 parent=self.parent,
             )
+        except OSError:
+            InfoBar.error(
+                title=f"{self.IDE.name}修补失败",
+                content=f"{self.IDE.name}正在运行中,请关闭后重试",
+                orient=Qt.AlignmentFlag.AlignHCenter,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=4500,
+                parent=self.parent,
+            )
+            return
         except Exception as e:
             self.restore(True, False)
             self.progress.setError(True)
