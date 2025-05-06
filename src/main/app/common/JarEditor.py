@@ -132,6 +132,7 @@ class JarEditor(QObject):
         version = RwConfig().config["IDE"][self.IDE.name]["version"]
         if not (os.path.exists(self.cachePath) and os.path.isdir(self.cachePath)):
             return
+        rm = False
         for directory in os.listdir(self.cachePath):
             if self.IDE.name in directory and directory.endswith(version):
                 cachePath = f"{self.cachePath}{directory}/splash"
@@ -139,4 +140,15 @@ class JarEditor(QObject):
                     for filename in os.listdir(cachePath):
                         if filename.endswith(".ij"):
                             os.remove(os.path.join(cachePath, filename))
+                            rm = True
                 break
+        if  rm:
+            InfoBar.success(
+                title="清理缓存成功",
+                content="已清理当前IDE的缓存文件",
+                orient=Qt.AlignmentFlag.AlignHCenter,
+                isClosable=True,
+                position=InfoBarPosition.TOP,
+                duration=3000,
+                parent=self.parent,
+            )
