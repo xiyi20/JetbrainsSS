@@ -3,8 +3,8 @@ import os
 import win32api
 from PIL import Image
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QFileDialog
-from qfluentwidgets import InfoBar, InfoBarPosition
+from PyQt6.QtWidgets import QFileDialog
+from qfluentwidgets import InfoBar, InfoBarPosition, PrimaryPushButton
 
 from src.main.app.common.JarPath import JarPath
 from src.main.app.common.RwConfig import RwConfig
@@ -22,14 +22,16 @@ class PathTool:
     def __init__(self, parent):
         self.parent = parent
 
-    def getIdeDirectory(self, ide: str, label: FLineEdit, panel: QWidget):
+    from src.main.app.component.OptionWidget import OptionWidget
+    def getIdeDirectory(self, ide: str, label: FLineEdit, panel: OptionWidget):
         folder = QFileDialog.getExistingDirectory(None, f"选择{ide}的目录")
         if folder:
             self.checkIdePath(folder, ide, label, panel)
 
-    def checkIdePath(self, folder: str, ide: str, label: FLineEdit, panel: QWidget):
+    def checkIdePath(self, folder: str, ide: str, label: FLineEdit, panel: OptionWidget):
         check_exe = False
         platforms = [64, 32]
+        version = ''
         for platform in platforms:
             exe = f"{folder}/bin/{ide.lower()}{platform}.exe"
             if os.path.exists(exe) and os.path.isfile(exe):
@@ -38,8 +40,9 @@ class PathTool:
                 ms = str(win32api.HIWORD(info["ProductVersionMS"]))
                 version = f"20{ms[:2]}.{ms[2:]}"
                 RwConfig().wConfig("IDE", ide, "version", version)
+                version = version[:4]
                 break
-        jar = f"{folder}{JarPath[ide].value[0]}"
+        jar = f"{folder}{JarPath[ide].value[version][0]}"
         result = os.path.exists(jar) and os.path.isfile(jar) and check_exe
         if result:
             InfoBar.success(
@@ -52,6 +55,7 @@ class PathTool:
                 parent=self.parent,
             )
             panel.setVisible(True)
+            panel.initJarEditor(folder, version)
             label.setText(folder)
             label.setEnabled(False)
             RwConfig().wConfig("IDE", ide, "path", folder)
@@ -71,12 +75,14 @@ class PathTool:
             RwConfig().wConfig("IDE", ide, "path", "")
         return result
 
-    def getSplashPath(self, ide: str, splash: str, label: FLineEdit):
+    def getSplashPath(self, ide: str, splash: str, targetLabel: FLineEdit, checkLabel: FLineEdit,
+                      button: PrimaryPushButton):
         splashPath, _ = QFileDialog.getOpenFileName(None, f"请选择{ide}的{splash}", "", "图片文件 (*.png)")
         if splashPath:
-            self.checkSplashPath(ide, label, splash[:7], splashPath)
+            self.checkSplashPath(ide, targetLabel, checkLabel, splash[:7], splashPath, button)
 
-    def checkSplashPath(self, ide: str, label:FLineEdit, splash: str, splashPath: str):
+    def checkSplashPath(self, ide: str, targetLabel: FLineEdit, checkLabel: FLineEdit, splash: str, splashPath: str,
+                        button: PrimaryPushButton):
         if os.path.exists(splashPath) and os.path.isfile(splashPath) and splashPath.endswith(".png"):
             splashSize = {"splash1": (640, 400), "splash2": (1280, 800)}[splash]
             imgSize = Image.open(splashPath).size
@@ -90,9 +96,11 @@ class PathTool:
                     duration=3000,
                     parent=self.parent,
                 )
-                label.setText(splashPath)
-                label.setEnabled(False)
+                targetLabel.setText(splashPath)
+                targetLabel.setEnabled(False)
                 RwConfig().wConfig("IDE", ide, splash, splashPath)
+                if checkLabel.text(): button.setEnabled(True)
+                # todo 输入框删除内容后需要禁用按钮
                 return True
             else:
                 InfoBar.error(
@@ -104,8 +112,8 @@ class PathTool:
                     duration=3000,
                     parent=self.parent,
                 )
-                label.setText("")
-                label.setEnabled(True)
+                targetLabel.setText("")
+                targetLabel.setEnabled(True)
                 RwConfig().wConfig("IDE", ide, splash, "")
                 return False
         else:
@@ -118,18 +126,19 @@ class PathTool:
                 duration=3000,
                 parent=self.parent,
             )
-            label.setText("")
-            label.setEnabled(True)
+            targetLabel.setText("")
+            targetLabel.setEnabled(True)
             return False
 
-    def unlockLabel(self, label: FLineEdit):
+    def unlockLabel(self, label: FLineEdit, button: PrimaryPushButton = None):
         label.setEnabled(True)
         InfoBar.warning(
             title="手动输入已解锁",
-            content="为避免错填可输入框内长按右键锁定",
+            content="为避免错填可[输入框内长按右键]锁定",
             orient=Qt.AlignmentFlag.AlignHCenter,
             isClosable=True,
             position=InfoBarPosition.TOP,
             duration=3000,
             parent=self.parent,
         )
+        if button: button.setEnabled(False)

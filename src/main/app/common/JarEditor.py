@@ -11,25 +11,26 @@ from src.main.app.common.RwConfig import RwConfig
 
 class JarEditor(QObject):
 
-    def __init__(self, IDE: Enum, baseDir: str, progress: ProgressBar, parent=None):
+    def __init__(self, IDE: Enum, baseDir: str, version: str, progress: ProgressBar, parent=None):
         super().__init__(parent)
         self.IDE = IDE
-        self.jarPath = f"{baseDir}{self.IDE.value[0]}"
+        self.jarPath = f"{baseDir}{self.IDE.value[version][0]}"
+        self.version = version
         self.bakPath = self.jarPath + ".bak"
         self.cachePath = f"C:/Users/{os.getlogin()}/AppData/Local/JetBrains/"
         self.progress = progress
         self.parent = parent
 
-    def edit(self, logoPath: []):
-        targetPath = self.IDE.value[1]
+    def edit(self, logoPath: list):
+        targetName = self.IDE.value[self.version][1]
         tempJar = self.jarPath + ".tmp"
         try:
             self.restore(False, False)
             self.progress.setValue(0)
             shutil.copy(self.jarPath, self.jarPath + ".bak")
             targets = [
-                targetPath,
-                targetPath[:targetPath.rfind(".")] + "@2x" + targetPath[targetPath.rfind("."):]
+                targetName + '.png',
+                targetName + '@2x.png'
             ]
             self.progress.resume()
             with ZipFile(self.jarPath, "r") as old:
