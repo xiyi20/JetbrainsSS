@@ -6,7 +6,7 @@ from src.main.app.component.HomeWidget import HomeWidget
 
 
 class MainWindow(FluentWindow):
-    def __init__(self, logo: str):
+    def __init__(self, logo: QIcon):
         super().__init__()
         self.logo = logo
         self.screen = QGuiApplication.primaryScreen().size()
@@ -18,7 +18,7 @@ class MainWindow(FluentWindow):
         self.setFixedSize(600, 700)
         self.move(self.screen.width() // 2 - self.width() // 2, self.screen.height() // 2 - self.height() // 2)
         self.setWindowTitle('JetbrainsSS')
-        self.setWindowIcon(QIcon(self.logo))
+        self.setWindowIcon(self.logo)
         self.initNavigation()
 
     def initNavigation(self):

@@ -90,9 +90,10 @@ class JarEditor(QObject):
 
     def restore(self, clear: bool, dialog: bool, buttons=None):
         self.progress.setValue(0)
-        if buttons is None: buttons = []
-        enabled = buttons[0].isEnabled()
-        for button in buttons: button.setEnabled(False)
+        enabled = False
+        if buttons is not None:
+            enabled = buttons[0].isEnabled()
+            for button in buttons: button.setEnabled(False)
         if os.path.exists(self.bakPath) and os.path.isfile(self.bakPath):
             try:
                 shutil.move(self.bakPath, self.jarPath)
@@ -108,8 +109,9 @@ class JarEditor(QObject):
                 )
                 return
             finally:
-                buttons[0].setEnabled(enabled)
-                buttons[1].setEnabled(True)
+                if buttons is not None:
+                    buttons[0].setEnabled(enabled)
+                    buttons[1].setEnabled(True)
             self.progress.setValue(100)
             if clear: self.clearCache()
             if dialog:
@@ -125,8 +127,9 @@ class JarEditor(QObject):
         else:
             self.progress.setError(True)
             self.progress.setValue(100)
-            buttons[0].setEnabled(enabled)
-            buttons[1].setEnabled(True)
+            if buttons is not None:
+                buttons[0].setEnabled(enabled)
+                buttons[1].setEnabled(True)
             if dialog:
                 InfoBar.warning(
                     title=f"{self.IDE.name}还原失败",
