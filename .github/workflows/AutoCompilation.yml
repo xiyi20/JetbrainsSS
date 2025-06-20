@@ -42,7 +42,7 @@ jobs:
 
       - name: Create Executable
         run: |
-          pyinstaller --onefile --windowed --name=JetbrainsSS.exe -i '.\src\main\resources\logo.ico' --add-data 'src;src' .\src\main\app\mian.py .\src\main\app\common\Icon.py .\src\main\app\common\JarEditor.py .\src\main\app\common\JarPath.py .\src\main\app\common\PathTool.py .\src\main\app\common\RwConfig.py .\src\main\app\component\FLineEdit.py .\src\main\app\component\Frame.py .\src\main\app\component\HomeWidget.py .\src\main\app\component\IdeaWidget.py .\src\main\app\component\IDEWidget.py .\src\main\app\component\MainWindow.py .\src\main\app\component\OptionWidget.py .\src\main\app\component\PressButton.py .\src\main\app\component\PycharmWidget.py .\src\main\app\component\WebstormWidget.py
+          pyinstaller --onefile --windowed --name=JetbrainsSS.exe -i '.\src\main\resources\logo.ico' --add-data 'src;src' .\src\main\app\main.py .\src\main\app\common\Icon.py .\src\main\app\common\JarEditor.py .\src\main\app\common\JarPath.py .\src\main\app\common\PathTool.py .\src\main\app\common\RwConfig.py .\src\main\app\component\FLineEdit.py .\src\main\app\component\Frame.py .\src\main\app\component\HomeWidget.py .\src\main\app\component\IdeaWidget.py .\src\main\app\component\IDEWidget.py .\src\main\app\component\MainWindow.py .\src\main\app\component\OptionWidget.py .\src\main\app\component\PressButton.py .\src\main\app\component\PycharmWidget.py .\src\main\app\component\WebstormWidget.py
 
       - name: Init Files(JetbrainsSS)
         run: |
