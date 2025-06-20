@@ -21,9 +21,10 @@ class JarEditor(QObject):
         self.progress = progress
         self.parent = parent
 
-    def edit(self, logoPath: list):
+    def edit(self, buttons: list, logoPath: list):
         targetName = self.IDE.value[self.version][1]
         tempJar = self.jarPath + ".tmp"
+        for button in buttons: button.setEnabled(False)
         try:
             self.restore(False, False)
             self.progress.setValue(0)
@@ -85,9 +86,13 @@ class JarEditor(QObject):
         finally:
             if os.path.exists(tempJar) and os.path.isfile(tempJar):
                 os.remove(tempJar)
+            for button in buttons: button.setEnabled(True)
 
-    def restore(self, clear: bool, dialog: bool = True):
+    def restore(self, clear: bool, dialog: bool, buttons=None):
         self.progress.setValue(0)
+        if buttons is None: buttons = []
+        enabled = buttons[0].isEnabled()
+        for button in buttons: button.setEnabled(False)
         if os.path.exists(self.bakPath) and os.path.isfile(self.bakPath):
             try:
                 shutil.move(self.bakPath, self.jarPath)
@@ -102,6 +107,9 @@ class JarEditor(QObject):
                     parent=self.parent,
                 )
                 return
+            finally:
+                buttons[0].setEnabled(enabled)
+                buttons[1].setEnabled(True)
             self.progress.setValue(100)
             if clear: self.clearCache()
             if dialog:
@@ -117,6 +125,8 @@ class JarEditor(QObject):
         else:
             self.progress.setError(True)
             self.progress.setValue(100)
+            buttons[0].setEnabled(enabled)
+            buttons[1].setEnabled(True)
             if dialog:
                 InfoBar.warning(
                     title=f"{self.IDE.name}还原失败",
@@ -142,7 +152,7 @@ class JarEditor(QObject):
                             os.remove(os.path.join(cachePath, filename))
                             rm = True
                 break
-        if  rm:
+        if rm:
             InfoBar.success(
                 title="清理缓存成功",
                 content="已清理当前IDE的缓存文件",

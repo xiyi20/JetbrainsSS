@@ -15,7 +15,7 @@ class MainWindow(FluentWindow):
         self.initUI()
 
     def initUI(self):
-        self.setFixedSize(650, 700)
+        self.setFixedSize(600, 700)
         self.move(self.screen.width() // 2 - self.width() // 2, self.screen.height() // 2 - self.height() // 2)
         self.setWindowTitle('JetbrainsSS')
         self.setWindowIcon(QIcon(self.logo))

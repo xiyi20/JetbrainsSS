@@ -69,11 +69,12 @@ class OptionWidget(QWidget):
         self.modButton = PrimaryPushButton("开始修补", self)
         self.modButton.setEnabled(False)
         self.modButton.clicked.connect(
-            lambda: self.jarEditor.edit([self.splashPath1.text(), self.splashPath2.text()])
+            lambda: self.jarEditor.edit([self.modButton, self.restoreButton],
+                                        [self.splashPath1.text(), self.splashPath2.text()])
         )
         self.restoreButton = PrimaryPushButton("还原", self)
         self.restoreButton.clicked.connect(
-            lambda: self.jarEditor.restore(True)
+            lambda: self.jarEditor.restore(True, True, [self.modButton, self.restoreButton])
         )
         self.bottomLayout.addWidget(self.modButton)
         self.bottomLayout.addWidget(self.restoreButton)

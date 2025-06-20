@@ -20,26 +20,35 @@ class IDEWidget(QWidget):
         self.layout = QVBoxLayout(self)
         self.panel = OptionWidget(IDE, self.pathTool, self.config, parent)
         self.contentLayout = QHBoxLayout()
-        self.label = BodyLabel()
-        self.label.setText(f"{IDE.name}路径:")
-        self.label.setFixedWidth(95)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.path = FLineEdit()
-        self.path.setFixedWidth(300)
-        self.path.setClearButtonEnabled(True)
-        self.path.focusOut.connect(
-            lambda: pathTool.checkIdePath(self.path.text(), IDE.name, self.path, self.panel)
-            if self.path.text() else None
+        self.ideName = BodyLabel()
+        self.ideName.setText(f"{IDE.name}路径:")
+        self.ideName.setFixedWidth(95)
+        self.ideName.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.idePath = FLineEdit()
+        self.idePath.setFixedWidth(230)
+        self.idePath.setClearButtonEnabled(True)
+        self.idePath.focusOut.connect(
+            lambda: pathTool.checkIdePath(self.idePath.text(), IDE.name, self.idePath, self.ideVersion, self.panel)
+            if self.idePath.text() else None
         )
         self.ideButton = PressButton("选择", self)
         self.ideButton.clicked.connect(
-            lambda: pathTool.getIdeDirectory(IDE.name, self.path, self.panel)
+            lambda: pathTool.getIdeDirectory(IDE.name, self.idePath, self.ideVersion, self.panel)
         )
         self.ideButton.pressed.connect(
-            lambda: pathTool.unlockLabel(self.path)
+            lambda: pathTool.unlockLabel(self.idePath)
         )
-        self.contentLayout.addWidget(self.label)
-        self.contentLayout.addWidget(self.path)
+        self.ideVersion = BodyLabel()
+        self.ideVersion.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.ideVersion.setStyleSheet(
+            "background-color: orange;"
+            "border-radius: 6px;"
+            "font-weight: bold"
+        )
+        self.ideVersion.setFixedWidth(50)
+        self.contentLayout.addWidget(self.ideName)
+        self.contentLayout.addWidget(self.idePath)
+        self.contentLayout.addWidget(self.ideVersion)
         self.contentLayout.addWidget(self.ideButton)
         self.layout.addLayout(self.contentLayout)
         self.layout.addWidget(self.panel)
@@ -48,7 +57,9 @@ class IDEWidget(QWidget):
 
     def loadConfig(self):
         path: str = self.config["IDE"][self.IDE.name]["path"]
+        version: str = self.config["IDE"][self.IDE.name]["version"]
         if path:
-            self.path.setText(path)
-            self.path.setEnabled(False)
+            self.idePath.setText(path)
+            self.idePath.setEnabled(False)
+            self.ideVersion.setText(version)
             self.panel.setVisible(True)

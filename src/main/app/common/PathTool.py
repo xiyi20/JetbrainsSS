@@ -4,7 +4,7 @@ import win32api
 from PIL import Image
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QFileDialog
-from qfluentwidgets import InfoBar, InfoBarPosition, PrimaryPushButton
+from qfluentwidgets import InfoBar, InfoBarPosition, PrimaryPushButton, BodyLabel
 
 from src.main.app.common.JarPath import JarPath
 from src.main.app.common.RwConfig import RwConfig
@@ -23,12 +23,12 @@ class PathTool:
         self.parent = parent
 
     from src.main.app.component.OptionWidget import OptionWidget
-    def getIdeDirectory(self, ide: str, label: FLineEdit, panel: OptionWidget):
+    def getIdeDirectory(self, ide: str, idePath: FLineEdit, ideVersion: BodyLabel, panel: OptionWidget):
         folder = QFileDialog.getExistingDirectory(None, f"选择{ide}的目录")
         if folder:
-            self.checkIdePath(folder, ide, label, panel)
+            self.checkIdePath(folder, ide, idePath, ideVersion, panel)
 
-    def checkIdePath(self, folder: str, ide: str, label: FLineEdit, panel: OptionWidget):
+    def checkIdePath(self, folder: str, ide: str, idePath: FLineEdit, ideVersion: BodyLabel, panel: OptionWidget):
         check_exe = False
         platforms = [64, 32]
         version = ''
@@ -39,6 +39,7 @@ class PathTool:
                 info = win32api.GetFileVersionInfo(exe, "\\")
                 ms = str(win32api.HIWORD(info["ProductVersionMS"]))
                 version = f"20{ms[:2]}.{ms[2:]}"
+                ideVersion.setText(version)
                 RwConfig().wConfig("IDE", ide, "version", version)
                 version = version[:4]
                 break
@@ -56,8 +57,8 @@ class PathTool:
             )
             panel.setVisible(True)
             panel.initJarEditor(folder, version)
-            label.setText(folder)
-            label.setEnabled(False)
+            idePath.setText(folder)
+            idePath.setEnabled(False)
             RwConfig().wConfig("IDE", ide, "path", folder)
         else:
             InfoBar.warning(
@@ -70,8 +71,8 @@ class PathTool:
                 parent=self.parent,
             )
             panel.setVisible(False)
-            label.setText("")
-            label.setEnabled(True)
+            idePath.setText("")
+            idePath.setEnabled(True)
             RwConfig().wConfig("IDE", ide, "path", "")
         return result
 
