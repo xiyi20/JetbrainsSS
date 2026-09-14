@@ -6,8 +6,8 @@ class JarPath(Enum):
         '253': ["/lib/product-backend.jar", ["idea_logo","idea_logo_subscription"]]
     }
     PyCharm = {
-        '253': ["/lib/app.jar", "pycharm_core_logo"]
+        '253': ["/lib/app.jar", ["pycharm_core_logo"]]
     }
     WebStorm = {
-        '253': ["/lib/app-backend.jar", "artwork/webide_logo"]
+        '253': ["/lib/app-backend.jar", ["artwork/webide_logo"]]
     }
