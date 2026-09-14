@@ -3,7 +3,7 @@ import shutil
 from enum import Enum
 from zipfile import ZipFile
 
-from PyQt6.QtCore import Qt, QObject
+from PyQt6.QtCore import Qt, QObject, QTimer
 from qfluentwidgets import ProgressBar, InfoBar, InfoBarPosition
 
 from src.main.app.common.RwConfig import RwConfig
@@ -25,8 +25,10 @@ class JarEditor(QObject):
         targetNames = self.IDE.value[self.version][1]
         tempJar = self.jarPath + ".tmp"
         for button in buttons: button.setEnabled(False)
+        self.progress.setVisible(True)
         try:
             self.restore(False, False)
+            self.progress.setError(False)
             self.progress.setValue(0)
             shutil.copy(self.jarPath, self.jarPath + ".bak")
             logoMap = {}
@@ -50,7 +52,7 @@ class JarEditor(QObject):
                             data = old.read(fileName)
                         new.writestr(file, data, compress_type=file.compress_type)
                         current += 1
-                        self.progress.setValue(int(current / total) * 80)
+                        self.progress.setValue(int(current / total * 80))
             shutil.move(tempJar, self.jarPath)
             self.clearCache()
             self.progress.setValue(100)
@@ -90,8 +92,12 @@ class JarEditor(QObject):
             if os.path.exists(tempJar) and os.path.isfile(tempJar):
                 os.remove(tempJar)
             for button in buttons: button.setEnabled(True)
+            QTimer.singleShot(1500, lambda: self.progress.setVisible(False))
 
     def restore(self, clear: bool, dialog: bool, buttons=None):
+        if dialog:
+            self.progress.setVisible(True)
+            self.progress.setError(False)
         self.progress.setValue(0)
         enabled = False
         if buttons is not None:
@@ -110,6 +116,8 @@ class JarEditor(QObject):
                     duration=4500,
                     parent=self.parent,
                 )
+                if dialog:
+                    QTimer.singleShot(1500, lambda: self.progress.setVisible(False))
                 return
             finally:
                 if buttons is not None:
@@ -127,9 +135,12 @@ class JarEditor(QObject):
                     duration=4500,
                     parent=self.parent,
                 )
+                QTimer.singleShot(1500, lambda: self.progress.setVisible(False))
         else:
             self.progress.setError(True)
             self.progress.setValue(100)
+            if dialog:
+                QTimer.singleShot(1500, lambda: self.progress.setVisible(False))
             if buttons is not None:
                 buttons[0].setEnabled(enabled)
                 buttons[1].setEnabled(True)

@@ -1,5 +1,14 @@
 import io
 import json
+import sys
+from pathlib import Path
+
+if getattr(sys, "frozen", False):
+    # Packaged with PyInstaller: config.json lives next to the executable
+    CONFIG_FILE = Path(sys.executable).parent / "config.json"
+else:
+    # Dev mode: config.json sits next to main.py (one level above this file)
+    CONFIG_FILE = Path(__file__).resolve().parent.parent / "config.json"
 
 
 class RwConfig:
@@ -11,7 +20,7 @@ class RwConfig:
 
     def __init__(self):
         self.config = {}
-        self.configFile = "./config.json"
+        self.configFile = str(CONFIG_FILE)
         try:
             with open(self.configFile, "r") as configFile:
                 self.config = json.load(configFile)

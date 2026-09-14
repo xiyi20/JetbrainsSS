@@ -21,6 +21,7 @@ class PathTool:
 
     def __init__(self, parent):
         self.parent = parent
+        self.onBindingChanged = None
 
     from src.main.app.component.OptionWidget import OptionWidget
     def getIdeDirectory(self, ide: str, idePath: FLineEdit, ideVersion: BodyLabel, panel: OptionWidget):
@@ -39,7 +40,8 @@ class PathTool:
                 info = win32api.GetFileVersionInfo(exe, "\\")
                 ms = str(win32api.HIWORD(info["ProductVersionMS"]))
                 version = ms
-                ideVersion.setText(version)
+                ideVersion.setText(f"v{version}")
+                ideVersion.setVisible(True)
                 RwConfig().wConfig("IDE", ide, "version", version)
                 version = version[:4]
                 break
@@ -60,6 +62,7 @@ class PathTool:
             idePath.setText(folder)
             idePath.setEnabled(False)
             RwConfig().wConfig("IDE", ide, "path", folder)
+            if self.onBindingChanged: self.onBindingChanged()
         else:
             InfoBar.warning(
                 title=folder,
@@ -73,7 +76,9 @@ class PathTool:
             panel.setVisible(False)
             idePath.setText("")
             idePath.setEnabled(True)
+            ideVersion.setVisible(False)
             RwConfig().wConfig("IDE", ide, "path", "")
+            if self.onBindingChanged: self.onBindingChanged()
         return result
 
     def getSplashPath(self, ide: str, splash: str, targetLabel: FLineEdit, checkLabel: FLineEdit,
