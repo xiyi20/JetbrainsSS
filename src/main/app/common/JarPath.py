@@ -3,14 +3,11 @@ from enum import Enum
 
 class JarPath(Enum):
     Idea = {
-        '2024': ["/lib/product.jar", "idea_logo"],
-        '2025': ["/lib/product.jar", "idea_logo"]
+        '253': ["/lib/product-backend.jar", ["idea_logo","idea_logo_subscription"]]
     }
     PyCharm = {
-        '2024': ["/lib/app.jar", "pycharm_logo"],
-        '2025': ["/lib/app.jar", "pycharm_logo"]
+        '253': ["/lib/app.jar", "pycharm_core_logo"]
     }
     WebStorm = {
-        '2024': ["/lib/app.jar", "artwork/webide_logo"],
-        '2025': ["/lib/app.jar", "artwork/webide_logo"]
+        '253': ["/lib/app-backend.jar", "artwork/webide_logo"]
     }

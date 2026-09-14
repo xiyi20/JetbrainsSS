@@ -1,10 +1,10 @@
 {
     "IDE": {
         "Idea": {
-            "path": "",
-            "version": "",
-            "splash1": "",
-            "splash2": ""
+            "path": "E:/JetBrains/IDEA",
+            "version": "253",
+            "splash1": "E:/JetbrainsSS/resources/images/idea_logo.png",
+            "splash2": "E:/JetbrainsSS/resources/images/idea_logo@2x.png"
         },
         "PyCharm": {
             "path": "",

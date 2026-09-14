@@ -38,7 +38,7 @@ class PathTool:
                 check_exe = True
                 info = win32api.GetFileVersionInfo(exe, "\\")
                 ms = str(win32api.HIWORD(info["ProductVersionMS"]))
-                version = f"20{ms[:2]}.{ms[2:]}"
+                version = ms
                 ideVersion.setText(version)
                 RwConfig().wConfig("IDE", ide, "version", version)
                 version = version[:4]

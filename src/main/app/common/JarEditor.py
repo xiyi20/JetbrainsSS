@@ -22,17 +22,20 @@ class JarEditor(QObject):
         self.parent = parent
 
     def edit(self, buttons: list, logoPath: list):
-        targetName = self.IDE.value[self.version][1]
+        targetNames = self.IDE.value[self.version][1]
         tempJar = self.jarPath + ".tmp"
         for button in buttons: button.setEnabled(False)
         try:
             self.restore(False, False)
             self.progress.setValue(0)
             shutil.copy(self.jarPath, self.jarPath + ".bak")
-            targets = [
-                targetName + '.png',
-                targetName + '@2x.png'
-            ]
+            logoMap = {}
+            targets = []
+            for name in targetNames:
+                for ext, logo in (('.png', logoPath[0]), ('@2x.png', logoPath[1])):
+                    fname = name + ext
+                    targets.append(fname)
+                    logoMap[fname] = logo
             self.progress.resume()
             with ZipFile(self.jarPath, "r") as old:
                 total = len(old.namelist())
@@ -40,8 +43,8 @@ class JarEditor(QObject):
                 with ZipFile(tempJar, "w") as new:
                     for file in old.infolist():
                         fileName = file.filename
-                        if fileName in targets:
-                            with open(logoPath[targets.index(fileName)], "rb") as logo:
+                        if fileName in logoMap:
+                            with open(logoMap[fileName], "rb") as logo:
                                 data = logo.read()
                         else:
                             data = old.read(fileName)
@@ -142,7 +145,8 @@ class JarEditor(QObject):
                 )
 
     def clearCache(self):
-        version = RwConfig().config["IDE"][self.IDE.name]["version"]
+        version:str = RwConfig().config["IDE"][self.IDE.name]["version"]
+        version = f"{version[:-1]}.{version[-1:]}"  # '25.3'
         if not (os.path.exists(self.cachePath) and os.path.isdir(self.cachePath)):
             return
         rm = False
