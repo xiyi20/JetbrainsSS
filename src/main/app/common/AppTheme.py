@@ -32,6 +32,23 @@ def versionBadgeStyle() -> str:
     )
 
 
+def unsupportedBadgeStyle() -> str:
+    """暂不支持版本的徽章: 红色警示底色, 深浅模式自适应。"""
+    if isDarkTheme():
+        bg = "rgba(255, 99, 99, 0.22)"
+        fg = "#ff9d9d"
+    else:
+        bg = "rgba(210, 50, 50, 0.14)"
+        fg = "#b22222"
+    return (
+        f"background-color: {bg};"
+        f"color: {fg};"
+        "border-radius: 9px;"
+        "padding: 1px 6px;"
+        "font-weight: bold;"
+    )
+
+
 def warningBannerStyle() -> str:
     """首页更新警告条: 琥珀色提示, 深浅模式自适应。"""
     if isDarkTheme():
@@ -57,3 +74,36 @@ def separatorStyle() -> str:
     """卡片内分隔线: 深浅模式自适应。"""
     line = "rgba(255, 255, 255, 0.12)" if isDarkTheme() else "rgba(0, 0, 0, 0.08)"
     return f"color: {line}; background: transparent; border: none;"
+
+
+def pngListStyle() -> str:
+    """扫描结果中 png 资源列表容器: 柔和底色圆角块, 深浅模式自适应。"""
+    if isDarkTheme():
+        return (
+            "background-color: rgba(255, 255, 255, 0.06);"
+            "border: 1px solid rgba(255, 255, 255, 0.08);"
+            "border-radius: 6px;"
+        )
+    return (
+        "background-color: rgba(0, 0, 0, 0.035);"
+        "border: 1px solid rgba(0, 0, 0, 0.06);"
+        "border-radius: 6px;"
+    )
+
+
+def summaryBannerStyle() -> str:
+    """扫描结果统计条: 主题色柔和底, 深浅模式自适应。"""
+    c = QColor(themeColor())
+    if isDarkTheme():
+        bg = QColor(c.red(), c.green(), c.blue(), 46)
+        fg = _mix(c, QColor(255, 255, 255), 0.6).name()
+    else:
+        bg = QColor(c.red(), c.green(), c.blue(), 28)
+        fg = _mix(c, QColor(0, 0, 0), 0.3).name()
+    return (
+        f"background-color: {bg.name(QColor.NameFormat.HexArgb)};"
+        f"color: {fg};"
+        "border-radius: 8px;"
+        "padding: 8px 14px;"
+        "font-weight: bold;"
+    )

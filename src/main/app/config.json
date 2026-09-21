@@ -1,22 +1,23 @@
 {
+    "version": "1.2",
     "IDE": {
         "Idea": {
             "path": "",
             "version": "",
-            "splash1": "",
-            "splash2": ""
+            "splash": "",
+            "splash@2x": ""
         },
         "PyCharm": {
             "path": "",
             "version": "",
-            "splash1": "",
-            "splash2": ""
+            "splash": "",
+            "splash@2x": ""
         },
         "WebStorm": {
             "path": "",
             "version": "",
-            "splash1": "",
-            "splash2": ""
+            "splash": "",
+            "splash@2x": ""
         }
     }
 }

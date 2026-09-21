@@ -7,6 +7,8 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from qfluentwidgets import TitleLabel, CaptionLabel, PushButton, FluentIcon, CardWidget
 
+from src.main.app.common.RwConfig import RwConfig
+
 
 def resourcesDir() -> Path:
     if getattr(sys, "frozen", False):
@@ -45,7 +47,8 @@ class AboutWidget(QWidget):
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cardLayout.addWidget(self.title)
 
-        self.version = CaptionLabel("Version 1.0")
+        version = RwConfig().config.get("version", "")
+        self.version = CaptionLabel(f"Version {version}" if version else "Version")
         self.version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cardLayout.addWidget(self.version)
 

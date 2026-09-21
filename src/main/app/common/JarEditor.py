@@ -14,46 +14,58 @@ class JarEditor(QObject):
     def __init__(self, IDE: Enum, baseDir: str, version: str, progress: ProgressBar, parent=None):
         super().__init__(parent)
         self.IDE = IDE
-        self.jarPath = f"{baseDir}{self.IDE.value[version][0]}"
         self.version = version
-        self.bakPath = self.jarPath + ".bak"
+        # 任务列表: [(jarPath, [logo 基础名, ...]), ...], 同一版本可含多个 jar
+        self.tasks = []
+        for jarMap in self.IDE.value[version]:
+            for jarRel, names in jarMap.items():
+                self.tasks.append((f"{baseDir}{jarRel}", names))
         self.cachePath = f"C:/Users/{os.getlogin()}/AppData/Local/JetBrains/"
         self.progress = progress
         self.parent = parent
 
+    @staticmethod
+    def _bakOf(jarPath: str) -> str:
+        return jarPath + ".bak"
+
     def edit(self, buttons: list, logoPath: list):
-        targetNames = self.IDE.value[self.version][1]
-        tempJar = self.jarPath + ".tmp"
+        tempJars = []
         for button in buttons: button.setEnabled(False)
         self.progress.setVisible(True)
+        self.progress.setValue(0)
         try:
             self.restore(False, False)
+            # restore 在无备份时会置红色错误态, 需在其后复位
             self.progress.setError(False)
-            self.progress.setValue(0)
-            shutil.copy(self.jarPath, self.jarPath + ".bak")
-            logoMap = {}
-            targets = []
-            for name in targetNames:
-                for ext, logo in (('.png', logoPath[0]), ('@2x.png', logoPath[1])):
-                    fname = name + ext
-                    targets.append(fname)
-                    logoMap[fname] = logo
-            self.progress.resume()
-            with ZipFile(self.jarPath, "r") as old:
-                total = len(old.namelist())
-                current = 0
-                with ZipFile(tempJar, "w") as new:
-                    for file in old.infolist():
-                        fileName = file.filename
-                        if fileName in logoMap:
-                            with open(logoMap[fileName], "rb") as logo:
-                                data = logo.read()
-                        else:
-                            data = old.read(fileName)
-                        new.writestr(file, data, compress_type=file.compress_type)
-                        current += 1
-                        self.progress.setValue(int(current / total * 80))
-            shutil.move(tempJar, self.jarPath)
+            # 备份所有目标 jar
+            for jarPath, _names in self.tasks:
+                shutil.copy(jarPath, self._bakOf(jarPath))
+            # 每个 jar 占总进度的份额
+            perJar = 80 // len(self.tasks) if self.tasks else 80
+            for taskIdx, (jarPath, targetNames) in enumerate(self.tasks):
+                tempJar = jarPath + ".tmp"
+                tempJars.append(tempJar)
+                logoMap = {}
+                for name in targetNames:
+                    for ext, logo in (('.png', logoPath[0]), ('@2x.png', logoPath[1])):
+                        logoMap[name + ext] = logo
+                with ZipFile(jarPath, "r") as old:
+                    total = len(old.namelist())
+                    current = 0
+                    with ZipFile(tempJar, "w") as new:
+                        for file in old.infolist():
+                            fileName = file.filename
+                            if fileName in logoMap:
+                                with open(logoMap[fileName], "rb") as logo:
+                                    data = logo.read()
+                            else:
+                                data = old.read(fileName)
+                            new.writestr(file, data, compress_type=file.compress_type)
+                            current += 1
+                            self.progress.setValue(int(taskIdx * perJar + current / total * perJar))
+                shutil.move(tempJar, jarPath)
+                if tempJar in tempJars:
+                    tempJars.remove(tempJar)
             self.clearCache()
             self.progress.setValue(100)
             InfoBar.success(
@@ -89,8 +101,9 @@ class JarEditor(QObject):
                 parent=self.parent,
             )
         finally:
-            if os.path.exists(tempJar) and os.path.isfile(tempJar):
-                os.remove(tempJar)
+            for tempJar in tempJars:
+                if os.path.exists(tempJar) and os.path.isfile(tempJar):
+                    os.remove(tempJar)
             for button in buttons: button.setEnabled(True)
             QTimer.singleShot(1500, lambda: self.progress.setVisible(False))
 
@@ -103,9 +116,14 @@ class JarEditor(QObject):
         if buttons is not None:
             enabled = buttons[0].isEnabled()
             for button in buttons: button.setEnabled(False)
-        if os.path.exists(self.bakPath) and os.path.isfile(self.bakPath):
+        # 只要存在任意备份就还原; 全部还原成功才计为成功
+        baks = [(jarPath, self._bakOf(jarPath)) for jarPath, _ in self.tasks]
+        hasBak = any(os.path.exists(bak) and os.path.isfile(bak) for _jar, bak in baks)
+        if hasBak:
             try:
-                shutil.move(self.bakPath, self.jarPath)
+                for jarPath, bak in baks:
+                    if os.path.exists(bak) and os.path.isfile(bak):
+                        shutil.move(bak, jarPath)
             except OSError:
                 InfoBar.error(
                     title=f"{self.IDE.name}还原失败",

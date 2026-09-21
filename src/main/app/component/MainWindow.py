@@ -4,6 +4,7 @@ from qfluentwidgets import FluentIcon as FI, FluentWindow
 from src.main.app.component.AboutWidget import AboutWidget
 from src.main.app.component.Frame import Frame
 from src.main.app.component.HomeWidget import HomeWidget
+from src.main.app.component.JarScanWidget import JarScanWidget
 
 
 class MainWindow(FluentWindow):
@@ -13,6 +14,8 @@ class MainWindow(FluentWindow):
         self.screen = QGuiApplication.primaryScreen().size()
         self.homeWidgets = HomeWidget(self)
         self.homeInterface = Frame('主页', self.homeWidgets, self)
+        self.jarScanWidgets = JarScanWidget(self)
+        self.jarScanInterface = Frame('扫描', self.jarScanWidgets, self)
         self.aboutWidgets = AboutWidget(self)
         self.aboutInterface = Frame('关于', self.aboutWidgets, self)
         self.initUI()
@@ -28,4 +31,5 @@ class MainWindow(FluentWindow):
 
     def initNavigation(self):
         self.addSubInterface(self.homeInterface, FI.HOME, '主页')
+        self.addSubInterface(self.jarScanInterface, FI.SEARCH, '扫描')
         self.addSubInterface(self.aboutInterface, FI.INFO, '关于')
