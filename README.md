@@ -15,13 +15,19 @@
 
 ## 📌 支持的 IDE 与版本
 
-| IDE | 版本 | jar 路径 |
-| --- | --- | --- |
-| IntelliJ IDEA | 2025.3 (253) | `/lib/product-backend.jar` |
-| PyCharm | 2025.3 (253) | `/lib/product-backend.jar` |
-| WebStorm | 2025.3 (253) | `/lib/app-backend.jar` |
+| IDE | 版本 | jar 路径 | 目标资源 |
+| --- | --- | --- | --- |
+| IntelliJ IDEA | 2025.3 (253) | `/lib/product-backend.jar` | `idea_logo`, `idea_logo_subscription` |
+| IntelliJ IDEA | 2026.2 (262) | `/lib/intellij.idea.ultimate.customization.jar` | `idea_logo`, `idea_logo_subscription` |
+| PyCharm | 2025.3 (253) | `/lib/product-backend.jar` | `pycharm_logo` |
+| PyCharm | 2026.2 (262) | `/lib/intellij.pycharm.community.jar`<br>`/lib/intellij.pycharm.pro.jar` | `pycharm_core_logo`<br>`pycharm_logo` |
+| WebStorm | 2025.3 (253) | `/lib/app-backend.jar` | `artwork/webide_logo` |
+| WebStorm | 2026.2 (262) | `/lib/intellij.webstorm.branding.jar` | `artwork/webide_logo` |
 
-> 其他版本可在 [JarPath.py](src/main/app/common/JarPath.py) 中自行扩展配置。
+> 其他版本可在 [JarPath.py](src/main/app/common/JarPath.py) 中自行扩展配置，格式为
+> `版本号 -> [{jar 相对路径: [logo 资源基础名(不含扩展名), ...]}, ...]`，同一版本可配置多个 jar。
+> 不确定某个版本 jar 内的资源名时，可使用侧边栏"工具"页扫描安装目录（右键版本徽章可自动定位），
+> 再右键扫描结果卡片即可生成配置片段并复制到剪贴板。
 
 ## ⚠️ 重要提示
 
